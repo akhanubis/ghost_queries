@@ -14,11 +14,14 @@ module GCFinder
 
   def self.api_client
     @@api_client ||= (
-      client = Google::APIClient.new
+      client = Google::APIClient.new(application_name: 'una app', application_version: '0.0.1')
+      @@google_calendar = client.discovered_api('calendar', 'v3')
       client.authorization.client_id = CLIENT_ID
       client.authorization.client_secret = CLIENT_SECRET
+      client.authorization.redirect_uri = REDIRECT_URI
       client.authorization.scope = 'https://www.googleapis.com/auth/calendar'
-      p 'SE CREO UN NUEVO CLIENT'
+      p "SE CREO UN NUEVO CLIENT #{client}"
+      p client.authorization
       client
     )
   end
@@ -32,7 +35,10 @@ module GCFinder
 
   def self.dup_authorization
     auth = api_client.authorization.dup
-    auth.redirect_uri = REDIRECT_URI
     auth
+  end
+
+  def self.authorization_url
+    api_client.authorization.authorization_uri.to_s
   end
 end
