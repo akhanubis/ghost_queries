@@ -1,3 +1,5 @@
+#encoding: UTF-8
+
 module GCFinder
   class Calendar
     extend GCFinder::GhostRespondTo
@@ -20,17 +22,21 @@ module GCFinder
       #find a calendar by its metadata or create a new one if it doesn't exist.
       def find_or_create!(authorization, calendar_metadata)
         if (calendar = find_hashed(authorization, calendar_metadata))
-          p 'lo encontreeeee'
+          puts 'lo encontreeeee'
           calendar
         else
-          p 'no esta, vamos a crearlo'
+          puts 'no esta, vamos a crearlo'
           create!(authorization, calendar_metadata)
         end
       end
 
       def method_missing(sym, *args, &block)
+        args_formatted = [args.first]
+        args_formatted.concat(args[1..-1].map{|str| "'#{str}'"})
+        puts "#{name}: Método no encontrado: #{sym}(#{args_formatted * ', '})"
         super(sym, *args, &block) unless ghost_query_method?(sym)
         #proxy the call to CalendarList if it is a query method
+        puts "#{name}: Delegando a CalendarList"
         GCFinder::CalendarList.send(sym, *args, &block)
       end
     end
