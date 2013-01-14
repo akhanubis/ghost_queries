@@ -12,18 +12,21 @@ if Rails.env.production?
   require 'google_calendar_finder_v3/acl'
   require 'google_calendar_finder_v3/color'
   require 'google_calendar_finder_v3/setting'
-else
-  autoload :GhostRespondTo, 'google_calendar_finder_v3/ghost_queries'
-  autoload :GhostQueries, 'google_calendar_finder_v3/ghost_queries'
-  autoload :Utils,  'google_calendar_finder_v3/utils'
-  autoload :Calendar,  'google_calendar_finder_v3/calendar'
-  autoload :CalendarList,  'google_calendar_finder_v3/calendar_list'
-  autoload :Acl,  'google_calendar_finder_v3/acl'
-  autoload :Color,  'google_calendar_finder_v3/color'
-  autoload :Setting,  'google_calendar_finder_v3/setting'
+  require 'google_calendar_finder_v3/event'
 end
 
 module GCFinder
+  if Rails.env.development?
+    autoload :GhostRespondTo, 'google_calendar_finder_v3/ghost_queries'
+    autoload :GhostQueries, 'google_calendar_finder_v3/ghost_queries'
+    autoload :Utils,  'google_calendar_finder_v3/utils'
+    autoload :Calendar,  'google_calendar_finder_v3/calendar'
+    autoload :CalendarList,  'google_calendar_finder_v3/calendar_list'
+    autoload :Acl,  'google_calendar_finder_v3/acl'
+    autoload :Color,  'google_calendar_finder_v3/color'
+    autoload :Setting,  'google_calendar_finder_v3/setting'
+    autoload :Event, 'google_calendar_finder_v3/event'
+  end
   def self.api_client
     @@api_client ||= (
       client = Google::APIClient.new(application_name: 'una app', application_version: '0.0.1')

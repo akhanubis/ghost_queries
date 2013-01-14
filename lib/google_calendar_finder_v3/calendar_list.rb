@@ -3,6 +3,7 @@
 module GCFinder
   class CalendarList
     extend GCFinder::GhostQueries
+    MUST_HAVE_FIELDS = 1
 
     class << self
       #return the first calendar for which keep_if_block returns true or nil.
