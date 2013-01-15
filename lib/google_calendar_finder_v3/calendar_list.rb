@@ -67,57 +67,6 @@ module GCFinder
 
       #return all the calendars.
       alias list select
-
-      #return the first calendar that match with the given values for its attributes.
-      def find_hashed(authorization, conditions)
-        puts "#{name}: Ejecutando find_hashed con:"
-        conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-        find(authorization) do |calendar|
-          found = true
-          conditions.each do |attr, value|
-            if calendar[attr.to_s] != value
-              found = false
-              break
-            end
-          end
-          puts "#{name}: Match!" if found
-          found
-        end
-      end
-
-      #return an array of the calendars that match the given values for its attributes.
-      def select_hashed(authorization, conditions)
-        puts "#{name}: Ejecutando select_hashed con:"
-        conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-        select(authorization) do |calendar|
-          found = true
-          conditions.each do |attr, value|
-            if calendar[attr.to_s] != value
-              found = false
-              break
-            end
-          end
-          puts "#{name}: Match!" if found
-          found
-        end
-      end
-
-      #return an array of the calendars that don't match the given values for its attributes.
-      def reject_hashed(authorization, conditions)
-        puts "#{name}: Ejecutando reject_hashed con:"
-        conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-        reject(authorization) do |calendar|
-          found = true
-          conditions.each do |attr, value|
-            if calendar[attr.to_s] != value
-              found = false
-              break
-            end
-          end
-          puts "#{name}: Match!" unless found
-          found
-        end
-      end
     end
   end
 end

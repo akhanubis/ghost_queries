@@ -10,7 +10,6 @@ if Rails.env.production?
   require 'google_calendar_finder_v3/calendar_list'
   require 'google_calendar_finder_v3/calendar'
   require 'google_calendar_finder_v3/acl'
-  require 'google_calendar_finder_v3/color'
   require 'google_calendar_finder_v3/setting'
   require 'google_calendar_finder_v3/event'
 end
@@ -23,7 +22,6 @@ module GCFinder
     autoload :Calendar,  'google_calendar_finder_v3/calendar'
     autoload :CalendarList,  'google_calendar_finder_v3/calendar_list'
     autoload :Acl,  'google_calendar_finder_v3/acl'
-    autoload :Color,  'google_calendar_finder_v3/color'
     autoload :Setting,  'google_calendar_finder_v3/setting'
     autoload :Event, 'google_calendar_finder_v3/event'
   end
@@ -35,15 +33,12 @@ module GCFinder
       client.authorization.client_secret = CLIENT_SECRET
       client.authorization.redirect_uri = REDIRECT_URI
       client.authorization.scope = 'https://www.googleapis.com/auth/calendar'
-      #p "SE CREO UN NUEVO CLIENT #{client}"
-      #p client.authorization
       client
     )
   end
 
   def self.google_calendar
     @@google_calendar ||= (
-      #p 'SE CREO UN NUEVO GOOGLE CALENDAR'
       api_client.discovered_api('calendar', 'v3')
     )
   end
