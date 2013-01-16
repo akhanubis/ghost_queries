@@ -3,12 +3,11 @@
 module GCFinder
   class CalendarList
     extend GCFinder::GhostQueries
-    MUST_HAVE_FIELDS = 1
 
     class << self
       #return the first calendar for which keep_if_block returns true or nil.
       def find(authorization, &keep_if_block)
-        puts "#{name}: Ejecutando find #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando find #{(block_given?)? 'con' : 'sin'} bloque"
         result = GCFinder.api_client.execute(
             api_method: GCFinder.google_calendar.calendar_list.list,
             authorization: authorization)
@@ -26,7 +25,7 @@ module GCFinder
 
       #return an array of the calendars for which keep_if_block returns true.
       def select(authorization, &keep_if_block)
-        puts "#{name}: Ejecutando select #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando select #{(block_given?)? 'con' : 'sin'} bloque"
         matches = []
         result = GCFinder.api_client.execute(
             api_method: GCFinder.google_calendar.calendar_list.list,
@@ -49,7 +48,7 @@ module GCFinder
 
       #return an array of the calendars for which keep_if_block returns false
       def reject(authorization, &keep_if_block)
-        puts "#{name}: Ejecutando reject #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando reject #{(block_given?)? 'con' : 'sin'} bloque"
         matches = []
         result = GCFinder.api_client.execute(
             api_method: GCFinder.google_calendar.calendar_list.list,

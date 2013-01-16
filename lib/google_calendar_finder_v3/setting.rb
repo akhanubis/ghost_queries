@@ -3,11 +3,10 @@
 module GCFinder
   class Setting
     extend GCFinder::GhostQueries
-    MUST_HAVE_FIELDS = 1
 
     class << self
       def find(authorization, &keep_if_block)
-        puts "#{name}: Ejecutando find #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando find #{(block_given?)? 'con' : 'sin'} bloque"
         result = GCFinder.api_client.execute(
           api_method: GCFinder.google_calendar.settings.list,
           authorization: authorization)
@@ -16,7 +15,7 @@ module GCFinder
       end
 
       def select(authorization, &keep_if_block)
-        puts "#{name}: Ejecutando select #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando select #{(block_given?)? 'con' : 'sin'} bloque"
         result = GCFinder.api_client.execute(
           api_method: GCFinder.google_calendar.settings.list,
           authorization: authorization)
@@ -29,7 +28,7 @@ module GCFinder
       end
 
       def reject(authorization, &keep_if_block)
-        puts "#{name}: Ejecutando reject #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando reject #{(block_given?)? 'con' : 'sin'} bloque"
         result = GCFinder.api_client.execute(
           api_method: GCFinder.google_calendar.settings.list,
           authorization: authorization)

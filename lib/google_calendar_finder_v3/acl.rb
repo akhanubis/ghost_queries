@@ -3,11 +3,10 @@
 module GCFinder
   class Acl
     extend GCFinder::GhostQueries
-    MUST_HAVE_FIELDS = 2
 
     class << self
       def find(authorization, calendar_id, &keep_if_block)
-        puts "#{name}: Ejecutando find en #{calendar_id} #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando find en #{calendar_id} #{(block_given?)? 'con' : 'sin'} bloque"
         result = GCFinder.api_client.execute(
             api_method: GCFinder.google_calendar.acl.list,
             parameters: {'calendarId' => calendar_id},
@@ -25,7 +24,7 @@ module GCFinder
       end
 
       def select(authorization, calendar_id, &keep_if_block)
-        puts "#{name}: Ejecutando select en #{calendar_id} #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando select en #{calendar_id} #{(block_given?)? 'con' : 'sin'} bloque"
         matches = []
         result = GCFinder.api_client.execute(
             api_method: GCFinder.google_calendar.acl.list,
@@ -49,7 +48,7 @@ module GCFinder
 
       #return an array of the calendars for which keep_if_block returns false
       def reject(authorization, calendar_id, &keep_if_block)
-        puts "#{name}: Ejecutando reject en #{calendar_id} #{(block_given?)? 'CON' : 'SIN'} bloque"
+        puts "#{name}: Ejecutando reject en #{calendar_id} #{(block_given?)? 'con' : 'sin'} bloque"
         matches = []
         result = GCFinder.api_client.execute(
             api_method: GCFinder.google_calendar.acl.list,
