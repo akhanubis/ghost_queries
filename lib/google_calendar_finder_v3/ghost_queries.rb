@@ -41,57 +41,24 @@ module GCFinder
       send(base_method, *static_params, conditions, &block)
     end
 
-    def find_hashed(*args)
-      conditions = args.last
-      puts "#{(respond_to?(:name))? name : self.class}: Ejecutando find_hashed con:"
-      conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-      find(*args[0..-2]) do |item|
-        raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
-        found = true
-        conditions.each do |attr, value|
-          if item.to_hash.stringify_keys[attr.to_s] != value
-            found = false
-            break
+    ['find', 'select', 'reject'].each do |base_method|
+      define_method "#{base_method}_hashed" do |*args|
+        conditions = args.last
+        puts "#{(respond_to?(:name))? name : self.class}: Ejecutando #{base_method}_hashed con:"
+        conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
+        send(base_method, *args[0..-2]) do |item|
+          raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
+          item_attrs = item.to_hash.stringify_keys
+          found = true
+          conditions.each do |attr, value|
+            if item_attrs[attr.to_s] != value
+              found = false
+              break
+            end
           end
+          puts "#{(respond_to?(:name))? name : self.class}: Match!" if found
+          found
         end
-        puts "#{(respond_to?(:name))? name : self.class}: Match!" if found
-        found
-      end
-    end
-
-    def select_hashed(*args)
-      conditions = args.last
-      puts "#{(respond_to?(:name))? name : self.class}: Ejecutando select_hashed con:"
-      conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-      select(*args[0..-2]) do |item|
-        raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
-        found = true
-        conditions.each do |attr, value|
-          if item.to_hash.stringify_keys[attr.to_s] != value
-            found = false
-            break
-          end
-        end
-        puts "#{(respond_to?(:name))? name : self.class}: Match!" if found
-        found
-      end
-    end
-
-    def reject_hashed(*args)
-      conditions = args.last
-      puts "#{(respond_to?(:name))? name : self.class}: Ejecutando reject_hashed con:"
-      conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-      reject(*args[0..-2]) do |item|
-        raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
-        found = true
-        conditions.each do |attr, value|
-          if item.to_hash.stringify_keys[attr.to_s] != value
-            found = false
-            break
-          end
-        end
-        puts "#{(respond_to?(:name))? name : self.class}: Match!" if found
-        found
       end
     end
   end
