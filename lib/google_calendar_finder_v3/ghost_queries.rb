@@ -3,16 +3,12 @@
 module GCFinder
   module GhostRespondTo
     def respond_to?(sym)
-      ghost_query_method?(sym) || super(sym)
+      !!strip_query_method(sym) || super(sym)
     end
 
     private
-    def ghost_query_method?(sym)
-      case sym
-        when /^(find|select|reject)_by/ then true
-        else
-          false
-      end
+    def strip_query_method(sym)
+      sym.to_s.match /^(find|select|reject)_by_(.*)$/
     end
   end
 
@@ -20,9 +16,8 @@ module GCFinder
     include GCFinder::GhostRespondTo
 
     def method_missing(sym, *args, &block)
-      super(sym, *args, &block) unless ghost_query_method?(sym)
+      super(sym, *args, &block) unless stripped = strip_query_method(sym)
 
-      stripped = sym.to_s.match /^(find|select|reject)_by_(.*)$/
       base_method = "#{stripped[1]}_hashed"
       param_names = stripped[2].split('_and_')
 

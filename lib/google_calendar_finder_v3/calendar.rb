@@ -12,7 +12,7 @@ module GCFinder
         args_formatted = [args.first]
         args_formatted.concat(args[1..-1].map{|str| "'#{str}'"})
         puts "#{name}: Método no encontrado: #{sym}(#{args_formatted * ', '})"
-        super(sym, *args, &block) unless ghost_query_method?(sym)
+        super(sym, *args, &block) unless strip_query_method(sym)
         #proxy the call to CalendarList if it is a query method
         puts "#{name}: Delegando a CalendarList"
         GCFinder::CalendarList.send(sym, *args, &block)
