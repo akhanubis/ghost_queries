@@ -32,7 +32,7 @@ module GhostQueries
   end
 
   def strip_query_method(sym)
-    sym.to_s.match /^(#{singleton_class.ghost_queries_methods * '|'})_by_(.*)$/
+    sym.to_s.match /^(?<method>#{singleton_class.ghost_queries_methods * '|'})_by_(?<method_suffixes>.*)$/
   end
 
   def respond_to_missing?(sym, *)
@@ -49,8 +49,8 @@ module GhostQueries
   end
 
   def call_hashed_query(method_name_matchdata, method_args)
-    query_method = "#{method_name_matchdata[1]}_hashed"
-    param_names = method_name_matchdata[2].split('_and_')
+    query_method = "#{method_name_matchdata[:method]}_hashed"
+    param_names = method_name_matchdata[:method_suffixes].split('_and_')
     param_values = method_args[-param_names.size..-1]
     #extra parameters not used as conditions for the query but required by the underlying iterator method (find, select, etc)
     #(e.g. Google Calendar authorization token for queries on Google Calendar resources)
