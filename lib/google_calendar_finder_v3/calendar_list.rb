@@ -2,9 +2,9 @@
 
 module GCFinder
   class CalendarList
-    extend GCFinder::GhostQueries
-
     class << self
+      acts_as_query_ghost :find, :select, :reject
+
       #return the first calendar for which keep_if_block returns true or nil.
       def find(authorization, &keep_if_block)
         puts "#{name}: Ejecutando find #{(block_given?)? 'con' : 'sin'} bloque"

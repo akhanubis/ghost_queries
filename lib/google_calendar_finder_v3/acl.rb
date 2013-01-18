@@ -2,9 +2,9 @@
 
 module GCFinder
   class Acl
-    extend GCFinder::GhostQueries
-
     class << self
+      acts_as_query_ghost :find, :select, :reject
+
       def find(authorization, calendar_id, &keep_if_block)
         puts "#{name}: Ejecutando find en #{calendar_id} #{(block_given?)? 'con' : 'sin'} bloque"
         result = GCFinder.api_client.execute(

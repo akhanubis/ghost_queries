@@ -3,12 +3,12 @@
 module GCFinder
   module GhostRespondTo
     def respond_to?(sym)
-      !!strip_query_method(sym) || super(sym)
+      !!strip_query_method(sym) || super
     end
 
     private
     def strip_query_method(sym)
-      sym.to_s.match /^(find|select|reject)_by_(.*)$/
+      sym.to_s.match /^(#{singleton_class.ghost_queries_base_methods * '|'})_by_(.*)$/
     end
   end
 
@@ -16,7 +16,7 @@ module GCFinder
     include GCFinder::GhostRespondTo
 
     def method_missing(sym, *args, &block)
-      super(sym, *args, &block) unless stripped = strip_query_method(sym)
+      super unless stripped = strip_query_method(sym)
 
       base_method = "#{stripped[1]}_hashed"
       param_names = stripped[2].split('_and_')
@@ -36,25 +36,38 @@ module GCFinder
       send(base_method, *static_params, conditions, &block)
     end
 
-    ['find', 'select', 'reject'].each do |base_method|
-      define_method "#{base_method}_hashed" do |*args|
-        conditions = args.last
-        puts "#{(respond_to?(:name))? name : self.class}: Ejecutando #{base_method}_hashed con:"
-        conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
-        send(base_method, *args[0..-2]) do |item|
-          raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
-          item_attrs = item.to_hash.stringify_keys
-          found = true
-          conditions.each do |attr, value|
-            if item_attrs[attr.to_s] != value
-              found = false
-              break
+    def self.included(base_class)
+      base_class.ghost_queries_base_methods.each do |base_method|
+        define_method "#{base_method}_hashed" do |*args|
+          conditions = args.last
+          puts "#{(respond_to?(:name))? name : self.class}: Ejecutando #{base_method}_hashed con:"
+          conditions.each {|k, v| puts %Q{  #{k}: "#{v}"}}
+          send(base_method, *args[0..-2]) do |item|
+            raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
+            item_attrs = item.to_hash.stringify_keys
+            found = true
+            conditions.each do |attr, value|
+              if item_attrs[attr.to_s] != value
+                found = false
+                break
+              end
             end
+            puts "#{(respond_to?(:name))? name : self.class}: Match!" if found
+            found
           end
-          puts "#{(respond_to?(:name))? name : self.class}: Match!" if found
-          found
         end
       end
     end
   end
+end
+
+class Class
+  def acts_as_query_ghost(*supported_methods)
+    define_singleton_method(:ghost_queries_base_methods) { supported_methods.map(&:to_s) }
+    include GCFinder::GhostQueries
+  end
+end
+
+class Array
+  acts_as_query_ghost :find, :select, :reject, :count, :detect, :find_all
 end
