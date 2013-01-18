@@ -6,9 +6,7 @@ require 'active_support/core_ext/module'
 
 if Rails.env.production?
   require 'google_calendar_finder_v3/ghost_queries'
-  require 'google_calendar_finder_v3/utils'
   require 'google_calendar_finder_v3/calendar_list'
-  require 'google_calendar_finder_v3/calendar'
   require 'google_calendar_finder_v3/acl'
   require 'google_calendar_finder_v3/setting'
   require 'google_calendar_finder_v3/event'
@@ -18,8 +16,6 @@ module GCFinder
   if Rails.env.development?
     autoload :GhostRespondTo, 'google_calendar_finder_v3/ghost_queries'
     autoload :GhostQueries, 'google_calendar_finder_v3/ghost_queries'
-    autoload :Utils,  'google_calendar_finder_v3/utils'
-    autoload :Calendar,  'google_calendar_finder_v3/calendar'
     autoload :CalendarList,  'google_calendar_finder_v3/calendar_list'
     autoload :Acl,  'google_calendar_finder_v3/acl'
     autoload :Setting,  'google_calendar_finder_v3/setting'
