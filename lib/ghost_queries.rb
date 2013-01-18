@@ -4,7 +4,7 @@ require 'active_support/core_ext/hash'
 require 'active_support/core_ext/module'
 
 module GhostQueries
-  def respond_to?(sym)
+  def respond_to_missing?(sym, *)
 	  !!strip_query_method(sym) || super
 	end
 
