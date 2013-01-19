@@ -4,29 +4,6 @@ require 'active_support/core_ext/hash'
 require 'active_support/core_ext/module'
 
 module GhostQueries
-  def self.included(base_class)
-    base_class.ghost_queries_methods.each do |base_method|
-      define_method "#{base_method}_hashed" do |*args|
-        conditions = args.last
-        ghost_queries_debug "Ejecutando #{base_method}_hashed con:"
-        conditions.each {|k, v| ghost_queries_debug "  #{k}: #{v}"}
-        send(base_method, *args[0..-2]) do |item|
-          raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
-          item_attrs = item.to_hash.stringify_keys
-          found = true
-          conditions.each do |attr, value|
-            if item_attrs[attr.to_s] != value
-              found = false
-              break
-            end
-          end
-          ghost_queries_debug "Match!" if found
-          found
-        end
-      end
-    end
-  end
-
   mattr_accessor :log_enabled
 
   def ghost_queries_debug(debug_message)
@@ -34,7 +11,7 @@ module GhostQueries
   end
 
   def strip_query_method(sym)
-    sym.to_s.match /^(?<method>#{singleton_class.ghost_queries_methods * '|'})_by_(?<method_suffixes>.*)$/
+    sym.to_s.match /^(?<method>#{ghost_queries_methods * '|'})_by_(?<method_suffixes>.*)$/
   end
 
   def respond_to_missing?(sym, *)
@@ -71,8 +48,29 @@ end
 
 class Class
   def acts_as_query_ghost(*supported_methods)
-    define_singleton_method(:ghost_queries_methods) { supported_methods.map(&:to_s) }
     include GhostQueries
+    define_method(:ghost_queries_methods) { supported_methods.map(&:to_s) }
+
+    supported_methods.each do |method|
+      define_method "#{method}_hashed" do |*args|
+        conditions = args.last
+        ghost_queries_debug "Ejecutando #{method}_hashed con:"
+        conditions.each {|k, v| ghost_queries_debug "  #{k}: #{v}"}
+        send(method, *args[0..-2]) do |item|
+          raise ArgumentError.new("#{item} must respond_to to_hash") unless item.respond_to? :to_hash
+          item_attrs = item.to_hash.stringify_keys
+          found = true
+          conditions.each do |attr, value|
+            if item_attrs[attr.to_s] != value
+              found = false
+              break
+            end
+          end
+          ghost_queries_debug "Match!" if found
+          found
+        end
+      end
+    end
   end
 end
 
