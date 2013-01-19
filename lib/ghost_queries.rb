@@ -77,3 +77,48 @@ end
 class Array
   acts_as_query_ghost :find, :select, :reject, :count, :detect, :find_all
 end
+
+#for a non trivial example of using acts_as_query_ghost as extend, check github/akhanubis/google_calendar_finder_demo
+class MyClass
+  attr_accessor :attr1, :attr2, :attr3
+
+  def initialize(attrs = {})
+    attrs.each do |name, value|
+      send("#{name}=", value)
+    end
+  end
+
+  @some_instances = [
+      new(attr1: 'hola', attr2: 'chau'),
+      new(attr1: 'hola', attr2: 'hasta luego'),
+      new(attr2: 'chau', attr3: 'nos vemos')
+  ]
+
+  def to_hash
+    self.instance_variables.each_with_object({}) do |attr, hash|
+      hash.merge!(attr[1..-1] => instance_variable_get(attr))
+    end
+  end
+
+  class << self
+    acts_as_query_ghost :select, :count_multiplied
+
+    #class methods of MiClass
+    def select(&block)
+      #you should retrieve the hashable instances in some way
+      @some_instances.select(&block)
+    end
+
+    def count_multiplied(multiplier = 1, &block)
+      @some_instances.count(&block) * multiplier
+    end
+  end
+end
+
+#[{name: 'Pablo', age: 99}, {name: 'Juan', age: 10}, {name: 'Pablo', age: 10}].find_by_name 'Pablo'
+#[{name: 'Pablo', age: 99}, {name: 'Juan', age: 10}, {name: 'Pablo', age: 10}].count_by_name_and_age 'Juan', 10
+#[{name: 'Pablo', age: 99}, {name: 'Juan', age: 10}, {name: 'Pablo', age: 10}].reject_hashed age: 10
+#MyClass.count_multiplied_by_attr2 5, 'chau'
+#MyClass.count_multiplied_by_attr1 'hola'
+#MyClass.select_by_attr2 'chau'
+#MyClass.select_hashed attr3: 'nos vemos'
