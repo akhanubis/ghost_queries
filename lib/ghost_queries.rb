@@ -27,8 +27,10 @@ module GhostQueries
     end
   end
 
+  mattr_accessor :log_enabled
+
   def ghost_queries_debug(debug_message)
-    puts "#{(respond_to?(:name))? name : self.class}: #{debug_message}"
+    puts "#{(respond_to?(:name))? name : self.class}: #{debug_message}" if GhostQueries.log_enabled
   end
 
   def strip_query_method(sym)
